@@ -4,6 +4,8 @@ import { Poppins } from "next/font/google";
 
 import { Toaster } from 'react-hot-toast';
 
+import { Footer, Header } from "@/components/layout";
+
 import "./globals.css";
 
 const geistPoppins = Poppins({
@@ -27,7 +29,13 @@ export default function RootLayout({
       <body
         className={`${geistPoppins.className} antialiased`}
       >
-        {children}
+        <Header />
+
+        <main className="max-w-7xl mx-auto p-6 ">
+          {children}
+        </main>
+
+        <Footer />
 
         <Toaster position="top-right" />
       </body>

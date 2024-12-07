@@ -1,12 +1,35 @@
 import { getHome } from "@/actions/home.action";
 
+import { ContactFormSection, IAmSection, ProjectSection } from "@/sections/home";
+
+import { ScrollToTopButton } from "@/components/common";
+
 export default async function Home() {
-  const home = await getHome();
-  console.log(home);
+  const { data, error} = await getHome();
 
   return (
-    <div className="w-full h-screen flex justify-center items-center">
-      <h1>Home</h1>
-    </div>
+    <>
+      {data && !error ? (
+        <>
+          <IAmSection data={data} />
+
+          <section id="experiencia" className="py-28 h-[500px]">
+            <h2 className="text-3xl font-bold mb-4">Experiencia</h2>
+          </section>
+    
+          <ProjectSection />
+
+          <section id="habilidades" className="py-28 h-[500px]">
+            <h2 className="text-3xl font-bold mb-4">Habilidades</h2>
+          </section>
+    
+          <ContactFormSection />
+    
+          <ScrollToTopButton />
+        </>
+      ) : (
+        <p>{error}</p>
+      )}
+    </>
   );
 }
