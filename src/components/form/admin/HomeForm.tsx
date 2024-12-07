@@ -1,25 +1,31 @@
-"use client"
+"use client";
+
+import { useEffect, useTransition } from "react";
  
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from 'react-hook-form';
+import toast from "react-hot-toast";
 import { z } from "zod";
 
+import { updateHome } from "@/actions/home.action";
+
+import { Textarea } from "@/components/ui/textarea";
+import { Button } from "@/components/ui/button";
+import { Spinner } from "@/components/common";
+import { Input } from "@/components/ui/input";
 import {
-  Form,
+  FormMessage,
   FormControl,
   FormField,
-  FormItem,
   FormLabel,
-  FormMessage,
-} from "@/components/ui/form"
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
+  FormItem,
+  Form,
+} from "@/components/ui/form";
+
 import { IHome } from "@/interfaces/home.interface";
-import { useEffect } from "react";
-import { Textarea } from "@/components/ui/textarea";
 
 interface Props {
-  data?: IHome;
+  data: IHome | null;
 }
 
 const formSchema = z.object({
@@ -45,23 +51,28 @@ const formSchema = z.object({
 });
 
 export const HomeForm = ({ data }: Props) => {
+  const [isPending, startTransition] = useTransition();
+
   useEffect(() => {
     if (data && Object.keys(data).length > 0) {
-      form.setValue("name", data.name);
-      form.setValue("age", data.age);
-      form.setValue("email", data.email);
-      form.setValue("profession", data.profession);
-      form.setValue("description", data.description);
-      form.setValue("address", data.address);
-      form.setValue("phone", data?.phone || "");
-      form.setValue("urlCurriculum", data.urlCurriculum);
-      form.setValue("linkedin", data.linkedin);
+      form.reset({
+        name: data.name || "",
+        age: data.age || undefined,
+        email: data.email || "",
+        profession: data.profession || "",
+        description: data.description || "",
+        address: data.address || "",
+        phone: data.phone || "",
+        urlCurriculum: data.urlCurriculum || "",
+        linkedin: data.linkedin || "",
+      });
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [data])
+  }, [data]);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
+    mode: "onBlur",
     defaultValues: {
       name: "",
       age: undefined,
@@ -75,8 +86,21 @@ export const HomeForm = ({ data }: Props) => {
     },
   });
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    console.log(values)
+  const onSubmit = async (values: z.infer<typeof formSchema>) => {
+    if (!data || !data?.id) {
+      toast.error("No se pudo actualizar el perfil");
+      return;
+    }
+
+    startTransition( async () => {
+      const { error } = await updateHome(data.id, values);
+
+      if (error) {
+        toast.error(error);
+      } else {
+        toast.success("Perfil actualizado correctamente");
+      }
+    });
   }
   
   return (
@@ -94,7 +118,11 @@ export const HomeForm = ({ data }: Props) => {
               <FormItem>
                 <FormLabel>Nombre Completo</FormLabel>
                 <FormControl>
-                  <Input type="text" placeholder="Ingrese su nombre completo" {...field} />
+                  <Input
+                    {...field}
+                    type="text"
+                    placeholder="Ingrese su nombre completo"
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -108,13 +136,18 @@ export const HomeForm = ({ data }: Props) => {
               <FormItem>
                 <FormLabel>Edad</FormLabel>
                 <FormControl>
-                <Input
-                  type="number"
-                  min={0}
-                  placeholder="Ingrese su edad"
-                  {...field}
-                  value={field.value || ""}
-                />
+                  <Input
+                    {...field}
+                    type="number"
+                    min={0}
+                    placeholder="Ingrese su edad"
+                    value={field.value || ""}
+                    onChange={(e) => {
+                      const value = e.target.value;
+                      field.onChange(value === "" ? undefined : Number(value))
+                    }}
+                    onBlur={field.onBlur}
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -129,9 +162,9 @@ export const HomeForm = ({ data }: Props) => {
                 <FormLabel>Correo Electrónico</FormLabel>
                 <FormControl>
                   <Input
-                    placeholder="Ingrese su correo electrónico"
-                    type="email"
                     {...field}
+                    type="email"
+                    placeholder="Ingrese su correo electrónico"
                   />
                 </FormControl>
                 <FormMessage />
@@ -146,7 +179,11 @@ export const HomeForm = ({ data }: Props) => {
               <FormItem>
                 <FormLabel>Profesión</FormLabel>
                 <FormControl>
-                  <Input type="text" placeholder="Ingrese su profesión" {...field} />
+                  <Input
+                    {...field}
+                    type="text"
+                    placeholder="Ingrese su profesión"
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -162,7 +199,11 @@ export const HomeForm = ({ data }: Props) => {
               <FormItem>
                 <FormLabel>Dirección</FormLabel>
                 <FormControl>
-                  <Input type="text" placeholder="Ingrese su dirección" {...field} />
+                  <Input
+                    {...field}
+                    type="text"
+                    placeholder="Ingrese su dirección"
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -176,7 +217,11 @@ export const HomeForm = ({ data }: Props) => {
               <FormItem>
                 <FormLabel>Teléfono</FormLabel>
                 <FormControl>
-                  <Input type="tel" placeholder="Ingrese su teléfono" {...field} />
+                  <Input
+                    {...field}
+                    type="tel"
+                    placeholder="Ingrese su teléfono"
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -190,7 +235,11 @@ export const HomeForm = ({ data }: Props) => {
               <FormItem>
                 <FormLabel>URL Currículum</FormLabel>
                 <FormControl>
-                  <Input type="url" placeholder="Ingrese la URL de su currículum" {...field} />
+                  <Input
+                    {...field}
+                    type="url"
+                    placeholder="Ingrese la URL de su currículum"
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -204,7 +253,11 @@ export const HomeForm = ({ data }: Props) => {
               <FormItem>
                 <FormLabel>URL LinkedIn</FormLabel>
                 <FormControl>
-                  <Input type="url" placeholder="Ingrese la URL de su LinkedIn" {...field} />
+                  <Input
+                    {...field}
+                    type="url"
+                    placeholder="Ingrese la URL de su LinkedIn"
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -221,10 +274,10 @@ export const HomeForm = ({ data }: Props) => {
                 <FormLabel>Descripción</FormLabel>
                 <FormControl>
                   <Textarea
+                    {...field}
                     rows={8}
                     placeholder="Ingrese su descripción"
                     className="resize-none"
-                    {...field}
                   />
                 </FormControl>
                 <FormMessage />
@@ -240,7 +293,7 @@ export const HomeForm = ({ data }: Props) => {
             className="w-2/6 mx-auto my-8"
             disabled={!form.formState.isValid}
           >
-            Actualizar
+            {isPending ? <Spinner /> : "Actualizar"}
           </Button>
         </div>
       </form>

@@ -12,3 +12,5 @@ export interface IHome {
   createdAt: string;
   updatedAt: string;
 }
+
+export type UpdateHomeData = Partial<Omit<IHome, "id">>;

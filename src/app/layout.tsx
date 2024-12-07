@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 
 import { Poppins } from "next/font/google";
 
+import { Toaster } from 'react-hot-toast';
+
 import "./globals.css";
 
 const geistPoppins = Poppins({
@@ -26,6 +28,8 @@ export default function RootLayout({
         className={`${geistPoppins.className} antialiased`}
       >
         {children}
+
+        <Toaster position="top-right" />
       </body>
     </html>
   );
