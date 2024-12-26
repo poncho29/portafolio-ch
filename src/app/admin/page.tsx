@@ -20,7 +20,6 @@ export default async function AdminPage() {
       ) : (
         <HomeForm data={data} />
       )}
-
     </div>
   );
 }

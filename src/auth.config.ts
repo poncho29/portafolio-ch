@@ -1,12 +1,14 @@
 import type { NextAuthConfig } from "next-auth";
 
-import Credentials from "next-auth/providers/credentials"
+import Credentials from "next-auth/providers/credentials";
 
-import bcrypt from "bcryptjs"
+import bcrypt from "bcryptjs";
+
+import { findUser } from "./actions/user.action";
 
 import { loginSchema } from "./utils";
  
-export default {
+export const authConfig = {
   providers: [
     Credentials({
       credentials: {
@@ -22,16 +24,7 @@ export default {
           throw new Error("Las credenciales no son validas.")
         }
 
-        // const user = await prisma.user.findUnique({
-        //   where: {
-        //     email: data.email
-        //   },
-        // });
-
-        const user  = {
-          email: data.email,
-          password: data.password
-        }
+        const user = await findUser(data.email);
 
         if (!user || !user.password) {
           console.log('Error en validacion del usuario');
@@ -45,9 +38,8 @@ export default {
           throw new Error("Las credenciales no son validas.")
         }
 
-        console.log('Se retorna el usuario');
-        return user;
+        return { ...user, id: user.id.toString() };
       },
     }),
   ],
-} satisfies NextAuthConfig
+} satisfies NextAuthConfig;

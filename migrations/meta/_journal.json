@@ -5,15 +5,8 @@
     {
       "idx": 0,
       "version": "6",
-      "when": 1733276656956,
-      "tag": "0000_petite_phalanx",
-      "breakpoints": true
-    },
-    {
-      "idx": 1,
-      "version": "6",
-      "when": 1734567471539,
-      "tag": "0001_marvelous_landau",
+      "when": 1735249812092,
+      "tag": "0000_curved_screwball",
       "breakpoints": true
     }
   ]

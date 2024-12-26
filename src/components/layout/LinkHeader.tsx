@@ -13,7 +13,6 @@ interface Props {
 
 export const LinkHeader = ({ href, label }: Props) => {
   const currentSection = useVisibleSection(['inicio', 'experiencia', 'proyectos', 'habilidades', 'contacto']);
-  console.log(currentSection, href);
   
   return (
     <Link

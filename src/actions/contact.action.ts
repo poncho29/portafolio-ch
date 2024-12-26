@@ -1,3 +1,5 @@
+'use server';
+
 interface IParams {
   body: {
     name: string;

@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 
-import { sendContactForm } from '@/actions';
+import { sendContactForm } from '@/actions/contact.action';
 
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Textarea } from '@/components/ui/textarea';

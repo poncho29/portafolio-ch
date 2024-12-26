@@ -1,10 +1,9 @@
 "use server";
 
 import { AuthError } from "next-auth";
-// import bcrypt from "bcryptjs";
 import { z } from "zod";
 
-import { loginSchema } from "@/utils/auth.schema";
+import { loginSchema } from "@/utils/auth-schema";
 
 import { signIn } from "@/auth";
 

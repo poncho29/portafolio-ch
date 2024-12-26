@@ -1,13 +1,13 @@
 import NextAuth from "next-auth";
 
-import { DrizzleAdapter } from "@auth/drizzle-adapter"
-
-import authConfig from "./auth.config";
 import { db } from "./db/connection";
+import { DrizzleAdapter } from "@auth/drizzle-adapter";
+
+import { authConfig } from "./auth.config";
  
 export const { handlers, signIn, signOut, auth } = NextAuth({
-  ...authConfig,
   adapter: DrizzleAdapter(db),
+  ...authConfig,
   session: { strategy: "jwt" },
   callbacks: {
     jwt({ token, user }) {
@@ -20,5 +20,5 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       session.user.role = token.role;
       return session;
     },
-  },
+  }
 });
