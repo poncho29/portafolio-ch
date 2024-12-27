@@ -27,11 +27,7 @@ export default async function ProjectPage() {
         {!data || error ? (
           <Error errorMessage={error} />
         ) : (
-          <>
-            
-
-            <DataTable columns={columns} data={data} />
-          </>
+          <DataTable columns={columns} data={data} />
         )}
       </div>
     </div>

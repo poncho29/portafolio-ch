@@ -3,47 +3,9 @@ import { eq } from "drizzle-orm";
 import { db } from "@/db/connection";
 import { projects } from "@/db/schema";
 
+import { parseStack } from "@/utils";
+
 import { ICreateProject } from "@/interfaces";
-
-// export const getAllProjects = async (page: number, pageSize: number) => {
-//   try {
-//     const offset = (page - 1) * pageSize;
-
-//     const countResult = await db
-//       .select()
-//       .from(projects)
-//       .limit(1);
-
-//     const totalProjects = countResult.length;
-
-//     const allProjects = await db
-//       .select()
-//       .from(projects)
-//       .limit(pageSize)
-//       .offset(offset);
-
-//     console.log(allProjects, totalProjects);
-
-//     if (!allProjects) {
-//       return { data: null, error: "No se encontraron datos" };
-//     }
-
-//     const totalPages = Math.ceil(totalProjects / pageSize); 
-
-//     return {
-//       data: {
-//         totalProjects,
-//         totalPages,
-//         allProjects: allProjects.map((project) => ({ ...project, stack: JSON.parse(project.stack) }))
-//       },
-//       error: null
-//     };
-//   } catch (error) {
-//     const errorMessage = error instanceof Error ? error.message : "Ups, algo salió mal";
-
-//     return { data: null, error: errorMessage };
-//   }
-// }
 
 export const getAllProjects = async () => {
   try {
@@ -58,7 +20,7 @@ export const getAllProjects = async () => {
     }
 
     return {
-      data: allProjects.map((project) => ({ ...project, stack: project.stack.split(",") })),
+      data: allProjects.map((project) => ({ ...project, stack: parseStack(project.stack) })),
       error: null
     };
   } catch (error) {

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import { Button } from "@/components/ui/button";
 
@@ -12,19 +12,42 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 
-export const CreateProjectForm = () => {
+import { IProject } from "@/interfaces";
+
+interface Props {
+  textButton?: string;
+  sizeButton?: 'default' | 'sm' | 'lg' | 'icon';
+  data?: IProject;
+}
+
+export const CreateProjectForm = ({
+  textButton = 'Crear Proyecto',
+  sizeButton = 'default',
+  data
+}: Props) => {
   const [open, setOpen] = useState(false);
+
+  useEffect(() => {
+    if (data) {
+      console.log(data);
+    }
+  }, [data]);
+    
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <Button onClick={() => setOpen(true)}>Crear Proyecto</Button>
+      <Button
+        size={sizeButton}
+        onClick={() => setOpen(true)}
+      >
+        {textButton}
+      </Button>
 
       <DialogContent>
         <DialogHeader>
           <DialogTitle>Are you absolutely sure?</DialogTitle>
           <DialogDescription>
-            This action cannot be undone. This will permanently delete your account
-            and remove your data from our servers.
+            {data ? data.title : 'This action cannot be undone. This will permanently delete your account and remove your data from our servers.'}
           </DialogDescription>
         </DialogHeader>
       </DialogContent>

@@ -19,6 +19,8 @@ import {
 } from "@/components/ui/table";
 
 import { ChevronLeft, ChevronRight } from "lucide-react";
+import { CreateProjectForm } from "@/components/form";
+import { IProject } from "@/interfaces";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[]
@@ -71,15 +73,14 @@ export function DataTable<TData, TValue>({
                     </TableCell>
                   ))}
                   <TableCell className="flex justify-center gap-2">
+                    <CreateProjectForm
+                      textButton="Editar"
+                      sizeButton="sm"
+                      data={row.original as IProject}
+                    />
+
                     <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => console.log(row.id)}
-                    >
-                      Editar
-                    </Button>
-                    <Button
-                      variant="outline"
+                      variant="destructive"
                       size="sm"
                       onClick={() => console.log(row.id)}
                     >
@@ -108,9 +109,11 @@ export function DataTable<TData, TValue>({
         >
           <ChevronLeft />
         </Button>
+
         <span>
-          {table.getState().pagination.pageIndex} de {table.getPageCount()}
+          {table.getState().pagination.pageIndex + 1} de {table.getPageCount()}
         </span>
+
         <Button
           variant="outline"
           size="sm"
