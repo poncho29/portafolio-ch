@@ -1,28 +1,43 @@
-import { Project } from "@/interfaces";
+import { IProject } from "@/interfaces";
 
-export const PROJECTS: Project[] = [
+export const PROJECTS: IProject[] = [
   {
     id: 1,
-    name: 'Projecto 1',
+    title: 'Projecto 1',
     description: 'lorem ipsum dolor sit amet consectetur adipiscing elit sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
-    urlImage: '/default.webp',
+    startDate: '2023-01-01',
+    endDate: '2023-02-01',
+    status: 'active',
+    imageUrl: '/default.webp',
     url: '',
     stack: ['Miro', 'Agile Scrum', 'Project'],
+    createdAt: '2023-01-01',
+    updatedAt: '2023-01-01',
   },
   {
     id: 2,
-    name: 'Projecto 2',
+    title: 'Projecto 2',
     description: 'lorem ipsum dolor sit amet consectetur adipiscing elit sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
-    urlImage: '/default.webp',
+    startDate: '2023-01-01',
+    endDate: '2023-02-01',
+    status: 'active',
+    imageUrl: '/default.webp',
     url: '',
     stack: ['Miro', 'Agile Scrum', 'Project'],
+    createdAt: '2023-01-01',
+    updatedAt: '2023-01-01',
   },
   {
     id: 2,
-    name: 'Projecto 3',
+    title: 'Projecto 3',
     description: 'lorem ipsum dolor sit amet consectetur adipiscing elit sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
-    urlImage: '/default.webp',
+    startDate: '2023-01-01',
+    endDate: '2023-02-01',
+    status: 'active',
+    imageUrl: '/default.webp',
     url: '',
     stack: ['Miro', 'Agile Scrum', 'Project'],
+    createdAt: '2023-01-01',
+    updatedAt: '2023-01-01',
   },
 ];

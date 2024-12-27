@@ -24,3 +24,17 @@ export const homeTable = sqliteTable("home", {
   createdAt: text().notNull(),
   updatedAt: text().notNull(),
 });
+
+export const projects = sqliteTable("projects", {
+  id: int().primaryKey({ autoIncrement: true }).notNull(),
+  title: text().notNull(),
+  description: text(),
+  startDate: text("start_date").notNull(),
+  endDate: text("end_date"),
+  status: text().notNull().$defaultFn(() => "pending"),
+  imageUrl: text().notNull(),
+  url: text(),
+  stack: text().notNull(),
+  createdAt: text("created_at").$defaultFn(() => new Date().toISOString()),
+  updatedAt: text("updated_at").$defaultFn(() => new Date().toISOString()),
+});

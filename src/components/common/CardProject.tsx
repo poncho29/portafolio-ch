@@ -9,10 +9,10 @@ import {
   Card,
 } from '../ui/card';
 
-import { Project } from '@/interfaces';
+import { IProject } from '@/interfaces';
 
 interface Props {
-  project: Project;
+  project: IProject;
 }
 
 export const CardProject = ({ project }: Props) => {
