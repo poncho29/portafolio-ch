@@ -7,6 +7,7 @@ import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 import { z } from "zod";
 
+import { InputDate, Spinner } from "@/components/common";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -18,6 +19,7 @@ import {
   Dialog,
 } from "@/components/ui/dialog";
 import {
+  FormDescription,
   FormMessage,
   FormControl,
   FormField,
@@ -25,9 +27,15 @@ import {
   FormItem,
   Form,
 } from "@/components/ui/form";
+import {
+  SelectContent,
+  SelectTrigger,
+  SelectValue,
+  SelectItem,
+  Select,
+} from "@/components/ui/select"
 
 import { IProject } from "@/interfaces";
-import { InputDate } from "@/components/common";
 
 interface Props {
   textButton?: string;
@@ -47,6 +55,31 @@ const formSchema = z.object({
   imageUrl: z.string().min(1, { message: "La imagen es requerida" }),
   url: z.string().optional(),
   stack: z.string().min(1, { message: "El stack es requerido" }),
+})
+.superRefine((data, ctx) => {
+  // Si el estado es diferente de "finished", endDate debe ser opcional
+  if ((data.status !== "finished") && data.endDate) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      message: "La fecha de finalización debe estar vacío para este estado",
+      path: ["endDate"],
+    });
+  } else {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      message: "La fecha de finalización es obligatoria",
+      path: ["endDate"],
+    });
+  }
+
+  // Validar que `endDate` sea posterior a `startDate`
+  if (data.endDate && data.startDate && data.endDate < data.startDate) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      message: "La fecha de finalización debe ser posterior a la de inicio",
+      path: ["endDate"],
+    });
+  }
 });
 
 export const CreateProjectForm = ({
@@ -70,23 +103,39 @@ export const CreateProjectForm = ({
       title: "",
       description: "",
       startDate: new Date(),
-      endDate: new Date(),
-      status: "",
+      endDate: undefined,
+      status: "pending",
       imageUrl: "",
       url: "",
       stack: "",
     },
   });
 
+  const status = form.watch("status");
+  const startDate = form.watch("startDate");
+  const endDate = form.watch("endDate");
+
+  useEffect(() => {
+    if (status !== "finished") {
+      form.setValue("endDate", undefined);
+      return;
+    }
+
+    if (startDate && endDate) {
+      form.setValue("endDate", undefined);
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [status, startDate]);
+
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
+    console.log(values);
+
     if (!data || !data?.id) {
       toast.error("No se pudo actualizar el proyecto");
       return;
     }
 
     startTransition( async () => {
-      console.log(values);
-
       // if (error) {
       //   toast.error(error);
       // } else {
@@ -96,7 +145,13 @@ export const CreateProjectForm = ({
   }
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
+    <Dialog
+      open={open}
+      onOpenChange={(open) => {
+        form.reset();
+        setOpen(open);
+      }}
+    >
       <Button
         size={sizeButton}
         onClick={() => setOpen(true)}
@@ -104,9 +159,9 @@ export const CreateProjectForm = ({
         {textButton}
       </Button>
 
-      <DialogContent>
-        <DialogHeader>
-          <DialogTitle>
+      <DialogContent className="h-[90vh] overflow-auto">
+        <DialogHeader className="my-2">
+          <DialogTitle className="text-center uppercase">
             {data ? 'Editar Proyecto' : 'Crear Proyecto'}
           </DialogTitle>
         </DialogHeader>
@@ -153,6 +208,89 @@ export const CreateProjectForm = ({
                 )}
               />
 
+              <FormField
+                control={form.control}
+                name="status"
+                render={({ field }) => (
+                  <FormItem className="mb-4">
+                    <FormLabel>Estado del proyecto</FormLabel>
+                    <Select
+                      defaultValue={field.value}
+                      onValueChange={field.onChange}
+                    >
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Seleccione un estado" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        <SelectItem value="pending">Pendiente</SelectItem>
+                        <SelectItem value="in-progress">En progreso</SelectItem>
+                        <SelectItem value="finished">Finalizado</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="url"
+                render={({ field }) => (
+                  <FormItem className="mb-4">
+                    <FormLabel>Link del proyecto</FormLabel>
+                    <FormControl>
+                      <Input
+                        {...field}
+                        type="url"
+                        placeholder="Ingrese la URL del proyecto"
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              
+              <FormField
+                control={form.control}
+                name="imageUrl"
+                render={({ field }) => (
+                  <FormItem className="mb-4">
+                    <FormLabel>Imagen del proyecto</FormLabel>
+                    <FormControl>
+                      <Input
+                        {...field}
+                        type="url"
+                        placeholder="Ingrese la URL del proyecto"
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="stack"
+                render={({ field }) => (
+                  <FormItem className="mb-4">
+                    <FormLabel>Stack del proyecto</FormLabel>
+                    <FormControl>
+                      <Input
+                        {...field}
+                        type="Text"
+                        placeholder="Ingrese el stack del proyecto"
+                      />
+                    </FormControl>
+                    <FormDescription>
+                      Ingrese el stack separando por comas (Excel, Word, etc)
+                    </FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
               <div className="grid grid-cols-2 gap-4">
                 <FormField
                   control={form.control}
@@ -164,6 +302,7 @@ export const CreateProjectForm = ({
                         <InputDate
                           value={field.value}
                           customClass="w-full"
+                          onChange={field.onChange}
                         />
                       </FormControl>
                       <FormMessage />
@@ -176,17 +315,41 @@ export const CreateProjectForm = ({
                   name="endDate"
                   render={({ field }) => (
                     <FormItem className="flex flex-col mb-4">
-                      <FormLabel>Fecha de finalizacion</FormLabel>
+                      <FormLabel
+                        className={status !== "finished" ? "opacity-50" : ""}
+                      >
+                        Fecha de finalizacion
+                      </FormLabel>
                       <FormControl>
                         <InputDate
                           value={field.value}
                           customClass="w-full"
+                          onChange={field.onChange}
+                          disabled={status !== "finished"}
+                          disabledDays={{
+                            before: startDate || new Date(),
+                            after: new Date(),
+                          }}
                         />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
                   )}
                 />
+              </div>
+
+              {/* <pre>
+                {JSON.stringify(form.getValues(), null, 2)}
+              </pre> */}
+
+              <div className="col-span-2 flex justify-center">
+                <Button
+                  type="submit"
+                  className="w-2/6 mx-auto my-6"
+                  // disabled={!form.formState.isValid}
+                >
+                  {isPending ? <Spinner /> : "Actualizar"}
+                </Button>
               </div>
             </form>
           </Form>
