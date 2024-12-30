@@ -7,33 +7,15 @@ import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 import { z } from "zod";
 
+import { ProjectFormSchema } from "@/utils";
+
+import { FormDescription, FormMessage, FormControl, FormField, FormLabel, FormItem, Form } from "@/components/ui/form";
+import { SelectContent, SelectTrigger, SelectValue, SelectItem, Select } from "@/components/ui/select"
+import { DialogContent, DialogHeader, DialogTitle, Dialog } from "@/components/ui/dialog";
 import { InputDate, Spinner } from "@/components/common";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import {
-  // DialogDescription,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  Dialog,
-} from "@/components/ui/dialog";
-import {
-  FormDescription,
-  FormMessage,
-  FormControl,
-  FormField,
-  FormLabel,
-  FormItem,
-  Form,
-} from "@/components/ui/form";
-import {
-  SelectContent,
-  SelectTrigger,
-  SelectValue,
-  SelectItem,
-  Select,
-} from "@/components/ui/select"
 
 import { IProject } from "@/interfaces";
 
@@ -43,45 +25,6 @@ interface Props {
   data?: IProject;
 }
 
-const formSchema = z.object({
-  title: z.string().min(1, { message: "El titulo es requerido" }),
-  description: z
-    .string()
-    .min(1, { message: "La descripción es requerida" })
-    .max(1000, { message: "La descripción debe tener máximo 1000 caracteres" }),
-  startDate: z.date().default(new Date()),
-  endDate: z.date().optional(),
-  status: z.string().min(1, { message: "El estado es requerido" }),
-  imageUrl: z.string().min(1, { message: "La imagen es requerida" }),
-  url: z.string().optional(),
-  stack: z.string().min(1, { message: "El stack es requerido" }),
-})
-.superRefine((data, ctx) => {
-  // Si el estado es diferente de "finished", endDate debe ser opcional
-  if ((data.status !== "finished") && data.endDate) {
-    ctx.addIssue({
-      code: z.ZodIssueCode.custom,
-      message: "La fecha de finalización debe estar vacío para este estado",
-      path: ["endDate"],
-    });
-  } else {
-    ctx.addIssue({
-      code: z.ZodIssueCode.custom,
-      message: "La fecha de finalización es obligatoria",
-      path: ["endDate"],
-    });
-  }
-
-  // Validar que `endDate` sea posterior a `startDate`
-  if (data.endDate && data.startDate && data.endDate < data.startDate) {
-    ctx.addIssue({
-      code: z.ZodIssueCode.custom,
-      message: "La fecha de finalización debe ser posterior a la de inicio",
-      path: ["endDate"],
-    });
-  }
-});
-
 export const CreateProjectForm = ({
   textButton = 'Crear Proyecto',
   sizeButton = 'default',
@@ -90,14 +33,8 @@ export const CreateProjectForm = ({
   const [open, setOpen] = useState(false);
   const [isPending, startTransition] = useTransition();
 
-  useEffect(() => {
-    if (data) {
-      console.log(data);
-    }
-  }, [data]);
-
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
+  const form = useForm<z.infer<typeof ProjectFormSchema>>({
+    resolver: zodResolver(ProjectFormSchema),
     mode: "onBlur",
     defaultValues: {
       title: "",
@@ -111,23 +48,27 @@ export const CreateProjectForm = ({
     },
   });
 
+  useEffect(() => {
+    if (data && Object.keys(data).length > 0) {
+      form.reset({
+        title: data.title,
+        description: data.description,
+        startDate: new Date(data.startDate),
+        endDate: data?.endDate ? new Date(data.endDate) : undefined,
+        status: data.status,
+        imageUrl: data.imageUrl,
+        url: data?.url || "",
+        stack: data.stack.join(", ")
+      })
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [data]);
+
   const status = form.watch("status");
   const startDate = form.watch("startDate");
   const endDate = form.watch("endDate");
 
-  useEffect(() => {
-    if (status !== "finished") {
-      form.setValue("endDate", undefined);
-      return;
-    }
-
-    if (startDate && endDate) {
-      form.setValue("endDate", undefined);
-    }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [status, startDate]);
-
-  const onSubmit = async (values: z.infer<typeof formSchema>) => {
+  const onSubmit = async (values: z.infer<typeof ProjectFormSchema>) => {
     console.log(values);
 
     if (!data || !data?.id) {
@@ -216,7 +157,10 @@ export const CreateProjectForm = ({
                     <FormLabel>Estado del proyecto</FormLabel>
                     <Select
                       defaultValue={field.value}
-                      onValueChange={field.onChange}
+                      onValueChange={(value) => {
+                        field.onChange(value);
+                        form.setValue("endDate", undefined);
+                      }}
                     >
                       <FormControl>
                         <SelectTrigger>
@@ -261,7 +205,7 @@ export const CreateProjectForm = ({
                     <FormControl>
                       <Input
                         {...field}
-                        type="url"
+                        type="text"
                         placeholder="Ingrese la URL del proyecto"
                       />
                     </FormControl>
@@ -302,7 +246,11 @@ export const CreateProjectForm = ({
                         <InputDate
                           value={field.value}
                           customClass="w-full"
-                          onChange={field.onChange}
+                          onChange={(date) => {
+                            field.onChange(date);
+                            if (form.getValues("endDate"))
+                              form.setValue("endDate", undefined);
+                          }}
                         />
                       </FormControl>
                       <FormMessage />
@@ -313,7 +261,7 @@ export const CreateProjectForm = ({
                 <FormField
                   control={form.control}
                   name="endDate"
-                  render={({ field }) => (
+                  render={({ field }) =>  (
                     <FormItem className="flex flex-col mb-4">
                       <FormLabel
                         className={status !== "finished" ? "opacity-50" : ""}
@@ -322,13 +270,13 @@ export const CreateProjectForm = ({
                       </FormLabel>
                       <FormControl>
                         <InputDate
-                          value={field.value}
+                          value={endDate}
                           customClass="w-full"
                           onChange={field.onChange}
                           disabled={status !== "finished"}
                           disabledDays={{
                             before: startDate || new Date(),
-                            after: new Date(),
+                            after: endDate || new Date(),
                           }}
                         />
                       </FormControl>
@@ -346,7 +294,7 @@ export const CreateProjectForm = ({
                 <Button
                   type="submit"
                   className="w-2/6 mx-auto my-6"
-                  // disabled={!form.formState.isValid}
+                  disabled={!form.formState.isValid}
                 >
                   {isPending ? <Spinner /> : "Actualizar"}
                 </Button>
