@@ -16,15 +16,15 @@ interface Props {
 }
 
 export const CardProject = ({ project }: Props) => {
-  const { name, description, urlImage, stack } = project
+  const { title, description, imageUrl, stack } = project
 
   return (
     <>
       <Card className='border border-yellow-200'>
         <CardHeader className='px-5 pb-3'>
           <Image
-            src={urlImage}
-            alt={`Project ${name}`}
+            src={imageUrl}
+            alt={`Project ${title}`}
             width={400}
             height={200}
             className="rounded-md mx-auto"
@@ -39,7 +39,7 @@ export const CardProject = ({ project }: Props) => {
               </span>
             ))}
           </div>
-          <CardTitle className='text-sm mb-2'>{name}</CardTitle>
+          <CardTitle className='text-sm mb-2'>{title}</CardTitle>
           <CardDescription>{description}</CardDescription>
           
           {/* <div className='flex gap-4'>

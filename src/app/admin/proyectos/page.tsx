@@ -3,13 +3,12 @@ import { FolderOpenDot } from 'lucide-react';
 import { DataTable } from './data-table';
 import { columns } from './columns';
 
-import { getAllProjects } from '@/actions/project.action';
+import { getAllProjects } from '@/actions/project-action';
 
 import { CreateProjectForm } from '@/components/form';
 import { Error } from '@/components/layout';
 
 export default async function ProjectPage() {
-  // const { data, error } = await getAllProjects(0, 10);
   const { data, error } = await getAllProjects();
 
   return (
@@ -24,9 +23,9 @@ export default async function ProjectPage() {
       </div>
 
       <div className="container mx-auto py-10">
-        {!data || error ? (
+        {error ? (
           <Error errorMessage={error} />
-        ) : (
+        ) : data && data.length > 0 && (
           <DataTable columns={columns} data={data} />
         )}
       </div>

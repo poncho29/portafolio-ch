@@ -1,30 +1,31 @@
 "use client";
 
 import {
+  getPaginationRowModel,
+  getCoreRowModel,
+  useReactTable,
   ColumnDef,
   flexRender,
-  getCoreRowModel,
-  getPaginationRowModel,
-  useReactTable,
 } from "@tanstack/react-table";
 
+import { CreateProjectForm } from "@/components/form";
 import { Button } from "@/components/ui/button";
 import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
   TableHeader,
+  TableBody,
+  TableHead,
+  TableCell,
   TableRow,
+  Table,
 } from "@/components/ui/table";
 
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import { CreateProjectForm } from "@/components/form";
+
 import { IProject } from "@/interfaces";
 
 interface DataTableProps<TData, TValue> {
-  columns: ColumnDef<TData, TValue>[]
-  data: TData[]
+  columns: ColumnDef<TData, TValue>[];
+  data: TData[];
 }
 
 export function DataTable<TData, TValue>({
@@ -32,11 +33,11 @@ export function DataTable<TData, TValue>({
   data,
 }: DataTableProps<TData, TValue>) {
   const table = useReactTable({
-    data,
     columns,
+    data,
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
-  })
+  });
 
   return (
     <>

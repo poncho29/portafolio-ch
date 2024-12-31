@@ -3,7 +3,7 @@
  * @param { string } stackString - The string to parse
  * @returns { string[] } - An array of strings
  **/
-export const parseStack =(stackString: string): string[] => {
+export const parseStack = (stackString: string): string[] => {
   try {
     const formattedString = stackString.replace(/'/g, '"');
     const stack = JSON.parse(formattedString);

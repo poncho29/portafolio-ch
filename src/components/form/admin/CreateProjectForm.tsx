@@ -7,6 +7,8 @@ import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 import { z } from "zod";
 
+import { createProject, updateProject } from "@/actions/project-action";
+
 import { ProjectFormSchema } from "@/utils";
 
 import { FormDescription, FormMessage, FormControl, FormField, FormLabel, FormItem, Form } from "@/components/ui/form";
@@ -52,14 +54,14 @@ export const CreateProjectForm = ({
     if (data && Object.keys(data).length > 0) {
       form.reset({
         title: data.title,
-        description: data.description,
+        description: data?.description || "",
         startDate: new Date(data.startDate),
         endDate: data?.endDate ? new Date(data.endDate) : undefined,
         status: data.status,
         imageUrl: data.imageUrl,
         url: data?.url || "",
         stack: data.stack.join(", ")
-      })
+      });
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [data]);
@@ -69,19 +71,39 @@ export const CreateProjectForm = ({
   const endDate = form.watch("endDate");
 
   const onSubmit = async (values: z.infer<typeof ProjectFormSchema>) => {
-    console.log(values);
+    // console.log(values);
 
-    if (!data || !data?.id) {
-      toast.error("No se pudo actualizar el proyecto");
-      return;
-    }
+    const formattedValues = {
+      ...values,
+      startDate: startDate.toISOString(),
+      endDate: endDate ? endDate.toISOString() : undefined,
+      stack: values.stack.split(", "),
+    };
+
+    console.log(formattedValues);
 
     startTransition( async () => {
-      // if (error) {
-      //   toast.error(error);
-      // } else {
-      //   toast.success("Perfil actualizado correctamente");
-      // }
+      if (data && data?.id) {
+        const { error } = await updateProject(data.id, formattedValues);
+
+        if (error ) {
+          toast.error(error);
+        } else {
+          toast.success("Proyecto actualizado correctamente");
+          form.reset();
+          setOpen(false);
+        }
+      } else {
+        const { error } = await createProject(formattedValues);
+
+        if (error ) {
+          toast.error(error);
+        } else {
+          toast.success("Proyecto creado correctamente");
+          form.reset();
+          setOpen(false);
+        }
+      }      
     });
   }
 
@@ -296,7 +318,7 @@ export const CreateProjectForm = ({
                   className="w-2/6 mx-auto my-6"
                   disabled={!form.formState.isValid}
                 >
-                  {isPending ? <Spinner /> : "Actualizar"}
+                  {isPending ? <Spinner /> : !data?.id ? "Crear" : "Actualizar"}
                 </Button>
               </div>
             </form>

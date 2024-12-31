@@ -1,3 +1,5 @@
+'use server';
+
 import { eq } from "drizzle-orm";
 
 import { db } from "@/db/connection";
@@ -6,6 +8,7 @@ import { projects } from "@/db/schema";
 import { parseStack } from "@/utils";
 
 import { ICreateProject } from "@/interfaces";
+import { revalidatePath } from "next/cache";
 
 export const getAllProjects = async () => {
   try {
@@ -13,14 +16,14 @@ export const getAllProjects = async () => {
       .select()
       .from(projects)
 
-    console.log(allProjects);
-
     if (!allProjects) {
       return { data: null, error: "No se encontraron datos" };
     }
 
+    const parsedData = allProjects.map((project) => ({ ...project, stack: parseStack(project.stack) }));
+
     return {
-      data: allProjects.map((project) => ({ ...project, stack: parseStack(project.stack) })),
+      data: parsedData,
       error: null
     };
   } catch (error) {
@@ -57,7 +60,8 @@ export const createProject = async (project: ICreateProject) => {
       ...rest,
       stack: JSON.stringify(stack)
     });
-    console.log(resp);
+
+    revalidatePath("/proyectos");
 
     return { data: resp, error: null };
   } catch (error) {
@@ -75,6 +79,8 @@ export const updateProject = async (id: number, values: ICreateProject) => {
       .update(projects)
       .set({ ...rest, stack: JSON.stringify(stack) })
       .where(eq(projects.id, id));
+
+    revalidatePath("/proyectos");
 
     return { data: result, error: null };
   } catch (error) {

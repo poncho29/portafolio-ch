@@ -1,12 +1,12 @@
 export interface IProject {
   id: number;
   title: string;
-  description?: string | undefined;
+  description?: string | null;
   startDate: string;
-  endDate?: string | undefined;
+  endDate?: string | null;
   status: string;
   imageUrl: string;
-  url?: string | undefined;
+  url?: string | null;
   stack: string[];
   createdAt?: string | null;
   updatedAt?: string | null;
