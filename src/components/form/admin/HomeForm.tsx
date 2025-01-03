@@ -107,7 +107,7 @@ export const HomeForm = ({ data }: Props) => {
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit(onSubmit)}
-        className="lg:grid lg:grid-cols-2 gap-4"
+        className="w-full lg:grid lg:grid-cols-2 gap-4"
       >
 
         <div className="space-y-4 mb-4 lg:mb-0">

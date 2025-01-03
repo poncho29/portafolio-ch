@@ -1,6 +1,6 @@
 'use server';
 
-import { eq } from "drizzle-orm";
+import { desc, eq } from "drizzle-orm";
 
 import { db } from "@/db/connection";
 import { projects } from "@/db/schema";
@@ -15,6 +15,7 @@ export const getAllProjects = async () => {
     const allProjects = await db
       .select()
       .from(projects)
+      .orderBy(desc(projects.createdAt));
 
     if (!allProjects) {
       return { data: null, error: "No se encontraron datos" };
@@ -101,9 +102,12 @@ export const deleteProjectById = async (id: number) => {
       throw new Error("Proyecto no encontrado");
     }
 
-    return true;
+    revalidatePath("/proyectos");
+
+    return { data: true, error: null };
   } catch (error) {
     console.error("Error al eliminar el proyecto:", error);
-    return false;
+    const errorMessage = error instanceof Error ? error.message : "Ups, algo salió mal";
+    return { data: false, error: errorMessage };
   }
 }

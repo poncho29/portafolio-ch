@@ -13,7 +13,7 @@ import { ProjectFormSchema } from "@/utils";
 
 import { FormDescription, FormMessage, FormControl, FormField, FormLabel, FormItem, Form } from "@/components/ui/form";
 import { SelectContent, SelectTrigger, SelectValue, SelectItem, Select } from "@/components/ui/select"
-import { DialogContent, DialogHeader, DialogTitle, Dialog } from "@/components/ui/dialog";
+import { DialogContent, DialogHeader, DialogTitle, Dialog, DialogDescription } from "@/components/ui/dialog";
 import { InputDate, Spinner } from "@/components/common";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
@@ -71,16 +71,12 @@ export const CreateProjectForm = ({
   const endDate = form.watch("endDate");
 
   const onSubmit = async (values: z.infer<typeof ProjectFormSchema>) => {
-    // console.log(values);
-
     const formattedValues = {
       ...values,
       startDate: startDate.toISOString(),
       endDate: endDate ? endDate.toISOString() : undefined,
       stack: values.stack.split(", "),
     };
-
-    console.log(formattedValues);
 
     startTransition( async () => {
       if (data && data?.id) {
@@ -122,14 +118,21 @@ export const CreateProjectForm = ({
         {textButton}
       </Button>
 
-      <DialogContent className="h-[90vh] overflow-auto">
+      <DialogContent
+        className="h-[90vh] overflow-auto"
+      >
         <DialogHeader className="my-2">
           <DialogTitle className="text-center uppercase">
             {data ? 'Editar Proyecto' : 'Crear Proyecto'}
           </DialogTitle>
         </DialogHeader>
 
-        <div>
+        <DialogDescription className="sr-only">
+          Llena los campos requeridos para {data ? 'editar' : 'crear'} un proyecto.
+        </DialogDescription>
+
+
+        <>
           <Form {...form}>
             <form
               onSubmit={form.handleSubmit(onSubmit)}
@@ -323,7 +326,7 @@ export const CreateProjectForm = ({
               </div>
             </form>
           </Form>
-        </div>
+        </>
 
       </DialogContent>
     </Dialog>

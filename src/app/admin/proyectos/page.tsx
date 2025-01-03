@@ -12,7 +12,7 @@ export default async function ProjectPage() {
   const { data, error } = await getAllProjects();
 
   return (
-    <div className='animate-fadeIn'>
+    <div className='w-full animate-fadeIn overflow-x-auto'>
       <div className="flex items-center justify-between mb-8">
         <div className="flex items-center gap-2">
           <FolderOpenDot strokeWidth={2.5} className='size-7' />
@@ -22,7 +22,7 @@ export default async function ProjectPage() {
         <CreateProjectForm />
       </div>
 
-      <div className="container mx-auto py-10">
+      <div className="py-10">
         {error ? (
           <Error errorMessage={error} />
         ) : data && data.length > 0 && (

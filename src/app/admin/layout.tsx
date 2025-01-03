@@ -16,7 +16,7 @@ export default function AdminLayout({
     <div className="w-full h-screen flex">
       <Sidebar />
 
-      <div className="grow h-full p-4">
+      <div className="w-full h-full p-4 overflow-x-auto">
         {children}
       </div>
     </div>

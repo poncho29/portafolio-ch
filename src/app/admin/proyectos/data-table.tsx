@@ -8,7 +8,7 @@ import {
   flexRender,
 } from "@tanstack/react-table";
 
-import { CreateProjectForm } from "@/components/form";
+import { CreateProjectForm, DeleteProjectButton } from "@/components/form";
 import { Button } from "@/components/ui/button";
 import {
   TableHeader,
@@ -69,7 +69,7 @@ export function DataTable<TData, TValue>({
                   data-state={row.getIsSelected() && "selected"}
                 >
                   {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id}>
+                    <TableCell key={cell.id} className={`w-[${cell.column.getSize()}]`} >
                       {flexRender(cell.column.columnDef.cell, cell.getContext())}
                     </TableCell>
                   ))}
@@ -80,13 +80,7 @@ export function DataTable<TData, TValue>({
                       data={row.original as IProject}
                     />
 
-                    <Button
-                      variant="destructive"
-                      size="sm"
-                      onClick={() => console.log(row.id)}
-                    >
-                      Eliminar
-                    </Button>
+                    <DeleteProjectButton id={row.getAllCells()[0].getValue()} />
                   </TableCell>
                 </TableRow>
               ))
