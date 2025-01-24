@@ -57,14 +57,15 @@ export const createProject = async (project: ICreateProject) => {
   try {
     const { stack, ...rest } = project;
 
-    const resp = await db.insert(projects).values({
+    await db.insert(projects).values({
       ...rest,
       stack: JSON.stringify(stack)
     });
 
     revalidatePath("/proyectos");
 
-    return { data: resp, error: null };
+    return { data: "Proyecto creado con éxito", error: null };
+    // return { data: resp, error: null };
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : "Ups, algo salió mal";
 
@@ -76,14 +77,15 @@ export const updateProject = async (id: number, values: ICreateProject) => {
   try {
     const { stack, ...rest } = values;
 
-    const result = await db
+    await db
       .update(projects)
       .set({ ...rest, stack: JSON.stringify(stack) })
       .where(eq(projects.id, id));
 
     revalidatePath("/proyectos");
 
-    return { data: result, error: null };
+    return { data: "Proyecto actualizado con éxito", error: null };
+    // return { data: result, error: null };
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : "Ups, algo salió mal";
 

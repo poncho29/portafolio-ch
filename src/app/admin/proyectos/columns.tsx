@@ -12,7 +12,7 @@ const handleFormatDate = (dateString: string) => {
   if (!dateString) return "-";
 
   const date = new Date(dateString);
-  return format(date, "yyyy-MM-dd"); // Formato corto
+  return format(date, "dd/MM/yyyy"); // Formato corto
 };
 
 const handleFormatStatus = (status: string) => {
@@ -38,7 +38,7 @@ export const columns: ColumnDef<IProject>[] = [
     header: "Título",
     cell: ({ row }) => (
       <div className="w-[120px]">
-        {handleTruncateText(row.original.title || "", 60)}
+        {handleTruncateText(row.original.title || "", 40)}
       </div>
     ),
   },
@@ -46,7 +46,7 @@ export const columns: ColumnDef<IProject>[] = [
     accessorKey: "description",
     header: "Descripción",
     cell: ({ row }) => (
-      <div className="w-[200px]">
+      <div className="w-[180px]">
         {handleTruncateText(row.original.description || "", 60)}
       </div>
     ),
@@ -55,7 +55,7 @@ export const columns: ColumnDef<IProject>[] = [
     accessorKey: "status",
     header: "Estado",
     cell: ({ row }) => (
-      <div className="w-[80px] capitalize">
+      <div className="w-[70px] capitalize">
         {handleFormatStatus(row.original.status)}
       </div>
     ),
@@ -64,7 +64,7 @@ export const columns: ColumnDef<IProject>[] = [
     accessorKey: "startDate",
     header: "Fecha de inicio",
     cell: ({ row }) => (
-      <div className="w-[120px]">
+      <div className="w-[110px]">
         {handleFormatDate(row.original.startDate || "")}
       </div>
     ),
@@ -73,7 +73,7 @@ export const columns: ColumnDef<IProject>[] = [
     accessorKey: "endDate",
     header: "Fecha de fin",
     cell: ({ row }) => (
-      <div className="w-[120px]">
+      <div className="w-[100px]">
         {handleFormatDate(row.original.endDate || "")}
       </div>
     ),
@@ -82,8 +82,8 @@ export const columns: ColumnDef<IProject>[] = [
     accessorKey: "url",
     header: "URL",
     cell: ({ row }) => (
-      <div className="w-[120px]">
-        {handleTruncateText(row.original.url || "", 40)}
+      <div className="w-[120px] overflow-hidden">
+        {handleTruncateText(row.original.url || "", 15)}
       </div>
     ),
   },
@@ -92,7 +92,7 @@ export const columns: ColumnDef<IProject>[] = [
     header: "Stack",
     cell: ({ row }) => (
       <div className="w-[160px]">
-        {handleTruncateText(row.original.stack ? row.original.stack.join(", ") : "-", 60)}
+        {handleTruncateText(row.original.stack ? row.original.stack.join(", ") : "-", 30)}
       </div>
     ),
   }

@@ -3,7 +3,7 @@ import { NextResponse } from "next/server";
 
 import { authConfig } from "./auth.config";
 
-import { publicRoutes } from "./utils";
+import { publicRoutes, publicEndpoints } from "./utils";
 
 const { auth: middleware } = NextAuth(authConfig);
 
@@ -12,7 +12,7 @@ export default middleware((req) => {
   const isLoggedIn = !!auth?.user;
 
   // Permitir acceso a la ruta de registro sin autenticación
-  if (nextUrl.pathname === '/api/register') {
+  if (publicEndpoints.includes(nextUrl.pathname)) {
     return NextResponse.next();
   }
 
