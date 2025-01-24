@@ -1,10 +1,11 @@
 // import { v2 as cloudinary } from 'cloudinary';
-import { cloudinary } from './upload-file';
+// import { cloudinary } from './upload-file';
+import { cloudinary } from '@/lib/cloudinary';
+
+import { CloudinaryResponse } from '@/interfaces';
 
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const streamifier = require('streamifier');
-
-import { CloudinaryResponse } from './upload-file.response';
 
 export class UploadFileService {
   uploadFile(file: Express.Multer.File) {
