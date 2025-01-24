@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 
-import { UploadFileService } from "./upload-file.service";
+import { uploadFilAction } from "@/actions/upload-file-action";
+// import { UploadFileService } from "./upload-file.service";
 
 export const POST = async (req: NextRequest) => {
   try {
@@ -14,14 +15,20 @@ export const POST = async (req: NextRequest) => {
     const bytes = await file.arrayBuffer();
     const buffer = Buffer.from(bytes);
 
-    const uploadService = new UploadFileService();
-    const uploadResult = await uploadService.uploadFile({
+    const response = await uploadFilAction({
       buffer,
       originalname: file.name,
       mimetype: file.type
     } as Express.Multer.File);
 
-    return NextResponse.json({ uploadResult, error: null });
+    // const uploadService = new UploadFileService();
+    // const uploadResult = await uploadService.uploadFile({
+    //   buffer,
+    //   originalname: file.name,
+    //   mimetype: file.type
+    // } as Express.Multer.File);
+
+    return NextResponse.json({ file: response, error: null });
   } catch (error) {
     console.error("Failed to upload image", error);
     return NextResponse.json({
